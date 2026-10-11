@@ -24,6 +24,34 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
+// Timestamp microservice endpoints
+app.get("/api/:date?", function (req, res) {
+  let dateParam = req.params.date;
+  let date;
+
+  if (!dateParam) {
+    // Empty date parameter -> current time
+    date = new Date();
+  } else {
+    // If dateParam contains only numbers, parse it as an integer (Unix timestamp)
+    if (/^\d+$/.test(dateParam)) {
+      date = new Date(parseInt(dateParam, 10));
+    } else {
+      date = new Date(dateParam);
+    }
+  }
+
+  // Check if valid date
+  if (isNaN(date.getTime())) {
+    return res.json({ error: "Invalid Date" });
+  }
+
+  res.json({
+    unix: date.getTime(),
+    utc: date.toUTCString()
+  });
+});
+
 
 
 // Listen on port set in environment variable or default to 3000
